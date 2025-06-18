@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Leaflet Styles */
+.leaflet-container {
+  font-family: inherit;
+}
+
+/* Custom marker styles */
+.custom-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.marker-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Cluster styles */
+.marker-cluster-enterprise div {
+  background-color: rgba(59, 130, 246, 0.6);
+  border: 2px solid #3B82F6;
+}
+
+.marker-cluster-public div {
+  background-color: rgba(16, 185, 129, 0.6);
+  border: 2px solid #10B981;
+}
+
+.marker-cluster-association div {
+  background-color: rgba(249, 115, 22, 0.6);
+  border: 2px solid #F97316;
+}
+
+.marker-cluster-small {
+  width: 40px;
+  height: 40px;
+}
+
+.marker-cluster-medium {
+  width: 50px;
+  height: 50px;
+}
+
+.marker-cluster-large {
+  width: 60px;
+  height: 60px;
+}
+
+.marker-cluster div {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Custom popup styles */
+.custom-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  overflow: hidden;
+}
+
+.custom-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+
+.popup-content {
+  min-width: 280px;
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.popup-type {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.popup-type.enterprise {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.popup-type.publicEstablishment {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.popup-type.association {
+  background-color: rgba(249, 115, 22, 0.1);
+  color: #F97316;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.popup-body {
+  padding: 16px;
+}
+
+.popup-field {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.popup-field:last-child {
+  margin-bottom: 0;
+}
+
+.popup-field strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.popup-field span {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 400;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge.inactive {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Custom leaflet popup tip */
+.custom-popup .leaflet-popup-tip {
+  background: white;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .popup-content {
+    min-width: 250px;
+  }
+  
+  .popup-header,
+  .popup-body {
+    padding: 12px;
+  }
+  
+  .popup-title {
+    font-size: 16px;
+  }
+}
+
+/* Filter panel specific styles */
+.filter-panel-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.filter-panel-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.filter-panel-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.filter-panel-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 200ms, transform 200ms;
+}
