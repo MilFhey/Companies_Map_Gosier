@@ -70,6 +70,19 @@ function App() {
                         </a>
                       )}
                     </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="/analyse_abymes_gosier.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block w-full text-left px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`}
+                        >
+                          Comparaison Abymes/Gosier
+                        </a>
+                      )}
+                    </Menu.Item>
+
                   </div>
                 </Menu.Items>
               </Menu>
