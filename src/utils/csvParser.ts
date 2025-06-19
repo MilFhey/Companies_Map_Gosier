@@ -4,16 +4,23 @@ import { EntityData, EntityKind } from './mapUtils';
 /*****************************************************************
  * Coordonnées : extrait [lat, lon] depuis diverses colonnes
  *****************************************************************/
+const toFloat = (s: string): number => parseFloat(s.replace(',', '.'));
+
 const getCoords = (row: Record<string, string>): [number, number] | null => {
+  /* 1) champ unique \"lat,long\" --------------------------------- */
   const single = row['Géolocalisation de l\'établissement']
               || row['Géolocalisation de l’établissement']
               || row.latlong;
   if (single) {
-    const [la, lo] = single.replace(/"|\\(|\\)/g, '').split(/[,;]/).map(parseFloat);
+    const [laStr, loStr] = single.replace(/\"|\\(|\\)/g, '').split(/[,;]/);
+    const la = toFloat(laStr), lo = toFloat(loStr);
     if (!isNaN(la) && !isNaN(lo)) return [la, lo];
   }
-  const lat = parseFloat(row.lat || row.latitude || '');
-  const lon = parseFloat(row.lon || row.longitude || '');
+
+  /* 2) deux colonnes distinctes ---------------------------------- */
+  const latStr = row.lat || row.latitude || '';
+  const lonStr = row.lon || row.longitude || '';
+  const lat = toFloat(latStr), lon = toFloat(lonStr);
   return !isNaN(lat) && !isNaN(lon) ? [lat, lon] : null;
 };
 

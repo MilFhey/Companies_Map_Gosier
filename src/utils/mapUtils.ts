@@ -26,6 +26,9 @@ export interface EntityData {
 
 const GOSIER_CENTER: L.LatLngExpression = [16.205, -61.485];
 const DEFAULT_ZOOM = 13;
+const MAX_ZOOM = 19;
+const DISABLE_CLUSTERING_ZOOM = 17;   // au‑delà de ce zoom, chaque entité est affichée individuellement
+
 const CLUSTER_COLORS: Record<EntityKind, string> = {
   enterprise: '#2563eb', // blue-600
   publicEstablishment: '#16a34a', // green-600
@@ -42,40 +45,22 @@ function createIcon(kind: EntityKind): L.DivIcon {
   });
 }
 
+function createPopup(entity: EntityData): string {
+  const l: string[] = [];
+  l.push(`<h3 style="font-weight:600;margin:0 0 4px 0">${entity.name}</h3>`);
+  l.push(`<p style="margin:0;font-size:12px">${entity.address}</p>`);
+  if (entity.details.activity) l.push(`<p style="margin:4px 0 0 0;font-size:12px">${entity.details.activity}</p>`);
+  if (entity.details.section) l.push(`<p style="margin:0;font-size:12px">Section : ${entity.details.section}</p>`);
+  if (entity.details.objet) l.push(`<p style="margin:4px 0 0 0;font-size:12px">${entity.details.objet}</p>`);
+  if (entity.details.siren) l.push(`<p style="margin:4px 0 0 0;font-size:12px">SIREN : ${entity.details.siren}</p>`);
+  if (entity.details.siret) l.push(`<p style="margin:0;font-size:12px">SIRET : ${entity.details.siret}</p>`);
+  if (entity.details.creationDate) l.push(`<p style="margin:4px 0 0 0;font-size:12px">Création : ${entity.details.creationDate}</p>`);
+  return `<div style="font-size:14px;max-width:260px">${l.join('')}</div>`;
+}
+
 function createMarker(entity: EntityData): L.Marker {
-  const marker = L.marker(entity.coordinates, { icon: createIcon(entity.type) });
-
-  /* Construire dynamiquement le contenu du popup */
-  const lines: string[] = [];
-  lines.push(`<h3 style="font-weight:600;margin:0 0 4px 0">${entity.name}</h3>`);
-  lines.push(`<p style="margin:0;font-size:12px">${entity.address}</p>`);
-
-  // Commun : activité ou objet
-  if (entity.details.activity) {
-    lines.push(`<p style="margin:4px 0 0 0;font-size:12px">${entity.details.activity}</p>`);
-  }
-  if (entity.details.section) {
-    lines.push(`<p style="margin:0;font-size:12px">Section : ${entity.details.section}</p>`);
-  }
-  if (entity.details.objet) {
-    lines.push(`<p style="margin:4px 0 0 0;font-size:12px">${entity.details.objet}</p>`);
-  }
-
-  // Identifiants
-  if (entity.details.siren) {
-    lines.push(`<p style="margin:4px 0 0 0;font-size:12px">SIREN : ${entity.details.siren}</p>`);
-  }
-  if (entity.details.siret) {
-    lines.push(`<p style="margin:0;font-size:12px">SIRET : ${entity.details.siret}</p>`);
-  }
-
-  // Dates
-  if (entity.details.creationDate) {
-    lines.push(`<p style="margin:4px 0 0 0;font-size:12px">Création : ${entity.details.creationDate}</p>`);
-  }
-
-  marker.bindPopup(`<div style="font-size:14px;max-width:260px">${lines.join('')}</div>`);
-  return marker;
+  return L.marker(entity.coordinates, { icon: createIcon(entity.type) })
+    .bindPopup(createPopup(entity));
 }
 
 /** -------------------------------------------------------------
@@ -87,8 +72,12 @@ interface ClusterGroupByType {
   association: L.MarkerClusterGroup;
 }
 
-function createClusterGroup(kind: EntityKind): L.MarkerClusterGroup {
-  return L.markerClusterGroup({
+function createClusterGroup(kind: EntityKind, map: L.Map): L.MarkerClusterGroup {
+  const group = L.markerClusterGroup({
+    maxClusterRadius: 45,
+    disableClusteringAtZoom: DISABLE_CLUSTERING_ZOOM,
+    spiderfyOnMaxZoom: false,           // ← empêche la "fleur" géante
+    zoomToBoundsOnClick: true,          // zoom vers le cluster
     iconCreateFunction: (cluster) => {
       const count = cluster.getChildCount();
       return L.divIcon({
@@ -96,6 +85,17 @@ function createClusterGroup(kind: EntityKind): L.MarkerClusterGroup {
       });
     },
   });
+
+  // Amélioration UX : si on clique sur un cluster et qu'on n'est pas encore
+  // au zoom maxi, on force un zoom +2 (plutôt que spiderfy).
+  group.on('clusterclick', (e: any) => {
+    const currentZoom = map.getZoom();
+    if (currentZoom < MAX_ZOOM) {
+      map.setView(e.latlng, Math.min(currentZoom + 2, MAX_ZOOM));
+    }
+  });
+
+  return group;
 }
 
 /** -------------------------------------------------------------
@@ -110,12 +110,14 @@ export async function initializeMap(container: HTMLElement): Promise<void> {
   map = L.map(container).setView(GOSIER_CENTER, DEFAULT_ZOOM);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
+    minZoom: 11,
+    maxZoom: MAX_ZOOM,
   }).addTo(map);
 
   clusters = {
-    enterprise: createClusterGroup('enterprise'),
-    publicEstablishment: createClusterGroup('publicEstablishment'),
-    association: createClusterGroup('association'),
+    enterprise: createClusterGroup('enterprise', map),
+    publicEstablishment: createClusterGroup('publicEstablishment', map),
+    association: createClusterGroup('association', map),
   };
 
   const [enterprises, publics, associations] = await Promise.all([
