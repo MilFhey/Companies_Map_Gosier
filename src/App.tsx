@@ -32,13 +32,23 @@ function App() {
                 Carte Interactive - Le Gosier
               </h1>
             </div>
-            <button
-              onClick={() => setShowFilterPanel(!showFilterPanel)}
-              className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Filter className="h-4 w-4" />
-              <span>Filtres</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <a
+                href="/analyse.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+              >
+                <span>Analyse</span>
+              </a>
+              <button
+                onClick={() => setShowFilterPanel(!showFilterPanel)}
+                className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Filter className="h-4 w-4" />
+                <span>Filtres</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
