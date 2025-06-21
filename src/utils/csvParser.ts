@@ -4,7 +4,11 @@ import { EntityData, EntityKind } from './mapUtils';
 /*****************************************************************
  * Coordonnées : extrait [lat, lon] depuis diverses colonnes
  *****************************************************************/
-const toFloat = (s: string): number => parseFloat(s.replace(',', '.'));
+const toFloat = (s: string | undefined): number => {
+  if (!s) return NaN;
+  return parseFloat(s.replace(',', '.'));
+};
+
 
 const getCoords = (row: Record<string, string>): [number, number] | null => {
   /* 1) champ unique \"lat,long\" --------------------------------- */
@@ -53,15 +57,20 @@ function parseBusinessCSV(
 
           return [{
             id,
-            name: row['Enseigne de l\'établissement 1'] || 'Sans enseigne',
-            address: row['Adresse de l\'établissement'] || 'Le Gosier',
+            name: row["Dénomination de l'unité légale"] || row["Dénomination usuelle de l'établissement"] || 'Sans enseigne',
+            address: `${row["Adresse de l'établissement"] || row["Libellé de la voie de l'établissement"] || "Le Gosier"}${row["Complément d'adresse de l'établissement"] ? ", " + row["Complément d'adresse de l'établissement"] : ""}`,
             type: kind,
             coordinates: coords,
             details: {
               siren: row.SIREN,
               siret: row.SIRET,
               activity: row['Activité principale de l\'établissement'],
-              section: row['Section de l\'établissement'],
+              section: [
+                        row["Section de l'établissement"],
+                        row["Sous-section de l'établissement"],
+                        row["Division de l'établissement"],
+                        row["Groupe de l'établissement"]
+                      ].filter(Boolean).join(" - "),
               creationDate: row['Date de création de l\'établissement'],
             },
           }];

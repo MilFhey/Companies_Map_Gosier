@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Building2, MapPin, Users, Filter, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Building2, MapPin, Users, Filter, X, ChevronDown } from 'lucide-react';
 import MapContainer from './components/MapContainer';
 import FilterPanel from './components/FilterPanel';
 import { MapFilters } from './types/MapTypes';
+import { Menu } from '@headlessui/react';
 
 function App() {
   const [filters, setFilters] = useState<MapFilters>({
@@ -32,15 +33,48 @@ function App() {
                 Carte Interactive - Le Gosier
               </h1>
             </div>
+
+            {/* Analyse Dropdown + Filtres */}
             <div className="flex items-center space-x-2">
-              <a
-                href="/analyse.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
-              >
-                <span>Analyse</span>
-              </a>
+              {/* Menu déroulant Analyse statistique */}
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button className="inline-flex justify-center w-full px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
+                    Analyse statistique
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Menu.Button>
+                </div>
+                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none z-[1000]">
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="/analyse.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`}
+                        >
+                          Entités du Gosier
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="/analyse2.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`}
+                        >
+                          Entreprises fermées
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Menu>
+
+              {/* Bouton Filtres */}
               <button
                 onClick={() => setShowFilterPanel(!showFilterPanel)}
                 className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
